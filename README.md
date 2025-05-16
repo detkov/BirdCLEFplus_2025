@@ -29,6 +29,6 @@ source .venv/bin/activate
 ### Dataset downloading
 
 ```bash
-kaggle competitions download -p data  -c birdclef-2025
-unzip data/birdclef-2025.zip -d data
+kaggle competitions download -p input -c birdclef-2025
+unzip input/birdclef-2025.zip -d input/birdclef-2025/
 ```
