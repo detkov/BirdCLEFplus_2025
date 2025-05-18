@@ -32,3 +32,13 @@ source .venv/bin/activate
 kaggle competitions download -p input -c birdclef-2025
 unzip input/birdclef-2025.zip -d input/birdclef-2025/
 ```
+
+## Journal
+
+### 2025-05-18
+Lookead at different `librosa.feature.melspectrogram` params:
+* Changed `N_FFT` to `2048` from `1024`
+* Changed `HOP_LENGTH` to `512` from `256`
+* Changed `FMIN` from `20` to `50`
+* `FMAX` seems to be better at `15000`, not `14000`
+These changes were made due to the seemingly clearer and full image. However, we have to investigate it with training and validation. 

@@ -26,10 +26,22 @@ dev = [
 ]
 
 [[tool.uv.index]]
-name = "pytorch-cu128"
+name = "torch-cu128"
 url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
+[[tool.uv.index]]
+name = "torch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
 [tool.uv.sources]
-torch = { index = "pytorch-cu128" }
-torchvision = { index = "pytorch-cu128" }
+torch = [
+    { index = "torch-cu128", marker = "sys_platform == 'linux'" },
+    { index = "torch-cpu", marker = "sys_platform == 'darwin'" }
+]
+
+torchvision = [
+    { index = "torch-cu128", marker = "sys_platform == 'linux'" },
+    { index = "torch-cpu", marker = "sys_platform == 'darwin'" }
+]
