@@ -754,7 +754,7 @@ if __name__ == "__main__":
     set_seed(cfg.seed)
     os.makedirs(join(cfg.OUTPUT_DIR, f"{cfg.exp_name}_{now_str}"), exist_ok=True)
 
-    train_df = pd.read_csv(cfg.train_csv)[:100]
+    train_df = pd.read_csv(cfg.train_csv)
 
     print("\nStarting training...")
     print(f"LOAD_DATA is set to {cfg.LOAD_DATA}")
