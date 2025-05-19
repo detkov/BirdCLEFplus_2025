@@ -1,3 +1,6 @@
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv sync
+source .venv/bin/activate
 mkdir ~/.kaggle
 mv test_file.json ~/.kaggle/kaggle.json
 chmod 600 ~/.kaggle/kaggle.json

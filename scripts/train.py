@@ -1,34 +1,33 @@
 import argparse
-import os
-import logging
-import random
+import datetime
 import gc
-import time
-import cv2
-import math
-import warnings
 import inspect
+import logging
+import math
+import os
+import random
+import time
+import warnings
 from os.path import join
-import yaml
 
+import cv2
+import librosa
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import roc_auc_score
-import librosa
-
+import timm
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.optim import lr_scheduler
-from torch.utils.data import Dataset, DataLoader
-import wandb
-from tqdm.auto import tqdm
-import datetime
-
-import timm
+import yaml
 from dotenv import load_dotenv
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from torch.optim import lr_scheduler
+from torch.utils.data import DataLoader, Dataset
+from tqdm.auto import tqdm
+
+import wandb
 
 
 load_dotenv()
@@ -40,9 +39,7 @@ class CFG:
     def __init__(self, config_path: str):
         self.load_from_yaml(config_path)
     
-    def load_from_yaml(self, config_path):
-        """Load configuration from a YAML file"""
-        
+    def load_from_yaml(self, config_path):        
         with open(config_path, 'r') as f:
             config = yaml.safe_load(f)
         
@@ -55,7 +52,7 @@ class CFG:
         # Convert relative paths to absolute
         base_dir = os.path.dirname(os.path.dirname(config_path))
         for key in ['OUTPUT_DIR', 'train_datadir', 'train_csv', 'test_soundscapes', 
-                   'submission_csv', 'taxonomy_csv', 'spectrogram_npy']:
+                    'submission_csv', 'taxonomy_csv', 'spectrogram_npy']:
             if hasattr(self, key):
                 path = getattr(self, key)
                 if path.startswith('../'):
@@ -131,8 +128,8 @@ def process_audio_file(audio_path, cfg):
 
         if len(center_audio) < target_samples:
             center_audio = np.pad(center_audio, 
-                                 (0, target_samples - len(center_audio)), 
-                                 mode='constant')
+                                  (0, target_samples - len(center_audio)), 
+                                  mode='constant')
 
         mel_spec = audio2melspec(center_audio, cfg)
         

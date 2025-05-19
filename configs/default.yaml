@@ -12,7 +12,7 @@ train_csv: '../input/birdclef-2025/train.csv'
 test_soundscapes: '../input/birdclef-2025/test_soundscapes'
 submission_csv: '../input/birdclef-2025/sample_submission.csv'
 taxonomy_csv: '../input/birdclef-2025/taxonomy.csv'
-spectrogram_npy: '../input/birdclef25-mel-spectrograms/birdclef2025_melspec_5sec_256_256.npy'
+spectrogram_npy: '../input/birdclef-2025-precomputed/01/melspec.npy'
 
 # Model configuration
 model_name: 'efficientnet_b0'
@@ -20,7 +20,7 @@ pretrained: true
 in_channels: 1
 
 # Data loading and preprocessing
-LOAD_DATA: false
+LOAD_DATA: true
 FS: 32000
 TARGET_DURATION: 5.0
 TARGET_SHAPE: [256, 256]
