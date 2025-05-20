@@ -26,14 +26,15 @@ kaggle competitions download -p input -c birdclef-2025
 unzip input/birdclef-2025.zip -d input/birdclef-2025/
 ```
 
+If you wish to do manual data precomputation, you can run the following command:
 ```bash
-uv run python src/data_precomputation.py
+uv run python -m src.audio_processing
 ```
 
 ### Training
 
 ```bash
-uv run python src/train.py -c configs/default.yaml
+uv run python -m src.train -c configs/your_config.yaml
 ```
 
 ## Journal
@@ -51,17 +52,17 @@ These changes were made due to the seemingly clearer and full image. However, we
 
 ## Hypotheses
 
-[] Remove human voice [link1](https://www.kaggle.com/code/kdmitrie/bc25-separation-voice-from-data) [link2](https://www.kaggle.com/code/timothylovett/human-voice-removal-caution-around-ruther1)  
-[] Remove `mel_spec_norm`  
-[] Test padding audio if it is less than 5s instead of copying it [link](https://www.kaggle.com/code/shionao7/bird-25-submission-regnety008-v1)  
-[] Maybe use TTA [link](https://www.kaggle.com/code/salmanahmedtamu/labels-tta-efficientnet-b0-pytorch-inference)  
-[] Test `HOP_LENGTH` up to 16  
-[] Test `FMIN` up to 20  
-[] Test `FMAX` up to 16000    
-[] Test `N_MELS` up to 128
-[] Test model's `drop_rate` to something other than `0.2`  
-[] Test model's `drop_path_rate` to something other than `0.2`  
-[] Testa different model's classifier [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu)
+[ ] Remove human voice [link1](https://www.kaggle.com/code/kdmitrie/bc25-separation-voice-from-data) [link2](https://www.kaggle.com/code/timothylovett/human-voice-removal-caution-around-ruther1)  
+[ ] Remove `mel_spec_norm`  
+[ ] Test padding audio if it is less than 5s instead of copying it [link](https://www.kaggle.com/code/shionao7/bird-25-submission-regnety008-v1)  
+[ ] Maybe use TTA [link](https://www.kaggle.com/code/salmanahmedtamu/labels-tta-efficientnet-b0-pytorch-inference)  
+[ ] Test `HOP_LENGTH` up to 16  
+[ ] Test `FMIN` up to 20  
+[ ] Test `FMAX` up to 16000    
+[ ] Test `N_MELS` up to 128
+[ ] Test model's `drop_rate` to something other than `0.2`  
+[ ] Test model's `drop_path_rate` to something other than `0.2`  
+[ ] Testa different model's classifier [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu)
 ```python
         self.classifier = nn.Sequential(
             nn.Linear(backbone_out, 512),
@@ -75,8 +76,8 @@ These changes were made due to the seemingly clearer and full image. However, we
             nn.Linear(256, num_classes)
         )
 ```  
-[] Test audio denoising [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu/notebook)  
-[] Test `FocalLossBCE` [link](https://www.kaggle.com/code/hideyukizushi/bird25-onlyinf-v2-s-focallossbce-cv-962-lb-829)  
-[] Make prediction based on all 5s segments of the audio [link](https://www.kaggle.com/code/stefankahl/birdclef-2025-sample-submission)  
-[] Add albumentations [link](https://www.kaggle.com/code/gopidurgaprasad/audio-augmentation-albumentations)  
-[] Test extracting not the center 5 seconds, bu the first 5 seconds
+[ ] Test audio denoising [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu/notebook)  
+[ ] Test `FocalLossBCE` [link](https://www.kaggle.com/code/hideyukizushi/bird25-onlyinf-v2-s-focallossbce-cv-962-lb-829)  
+[ ] Make prediction based on all 5s segments of the audio [link](https://www.kaggle.com/code/stefankahl/birdclef-2025-sample-submission)  
+[ ] Add albumentations [link](https://www.kaggle.com/code/gopidurgaprasad/audio-augmentation-albumentations)  
+[ ] Test extracting not the center 5 seconds, bu the first 5 seconds

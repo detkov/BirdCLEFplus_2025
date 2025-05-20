@@ -1,17 +1,11 @@
 import argparse
 import datetime
 import gc
-import inspect
-import logging
-import math
 import os
 import random
-import time
 import warnings
-from os.path import join
+from os.path import basename, dirname, join, splitext
 
-import cv2
-import librosa
 import numpy as np
 import pandas as pd
 import timm
@@ -19,7 +13,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import yaml
+import wandb
 from dotenv import load_dotenv
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
@@ -27,55 +21,13 @@ from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader, Dataset
 from tqdm.auto import tqdm
 
-import wandb
+from src.audio_processing import process_data
+from src.config import Config
 
-
-load_dotenv()
-wandb.login()
 warnings.filterwarnings("ignore")
-logging.basicConfig(level=logging.ERROR)
-
-class CFG:
-    def __init__(self, config_path: str):
-        self.load_from_yaml(config_path)
-    
-    def load_from_yaml(self, config_path):        
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
-        
-        for key, value in config.items():
-            setattr(self, key, value)
-        
-        # Override device based on availability
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        
-        # Convert relative paths to absolute
-        base_dir = os.path.dirname(os.path.dirname(config_path))
-        for key in ['OUTPUT_DIR', 'train_datadir', 'train_csv', 'test_soundscapes', 
-                    'submission_csv', 'taxonomy_csv', 'spectrogram_npy']:
-            if hasattr(self, key):
-                path = getattr(self, key)
-                if path.startswith('../'):
-                    setattr(self, key, os.path.abspath(os.path.join(base_dir, path.lstrip('../'))))
-    
-    def to_dict(self):
-        pr = {}
-        for name in dir(self):
-            value = getattr(self, name)
-            if not name.startswith('__') and not inspect.ismethod(value):
-                pr[name] = value
-        return pr
-
-    def update_debug_settings(self):
-        if self.debug:
-            self.epochs = 2
-            self.selected_folds = [0]
 
 
-def set_seed(seed=42):
-    """
-    Set seed for reproducibility
-    """
+def set_seed(seed: int):
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     np.random.seed(seed)
@@ -84,96 +36,6 @@ def set_seed(seed=42):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-
-
-def audio2melspec(audio_data, cfg):
-    """Convert audio data to mel spectrogram"""
-    if np.isnan(audio_data).any():
-        mean_signal = np.nanmean(audio_data)
-        audio_data = np.nan_to_num(audio_data, nan=mean_signal)
-
-    mel_spec = librosa.feature.melspectrogram(
-        y=audio_data,
-        sr=cfg.FS,
-        n_fft=cfg.N_FFT,
-        hop_length=cfg.HOP_LENGTH,
-        n_mels=cfg.N_MELS,
-        fmin=cfg.FMIN,
-        fmax=cfg.FMAX,
-        power=2.0
-    )
-
-    mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
-    mel_spec_norm = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min() + 1e-8)
-    
-    return mel_spec_norm
-
-
-def process_audio_file(audio_path, cfg):
-    """Process a single audio file to get the mel spectrogram"""
-    try:
-        audio_data, _ = librosa.load(audio_path, sr=cfg.FS)
-
-        target_samples = int(cfg.TARGET_DURATION * cfg.FS)
-
-        if len(audio_data) < target_samples:
-            n_copy = math.ceil(target_samples / len(audio_data))
-            if n_copy > 1:
-                audio_data = np.concatenate([audio_data] * n_copy)
-
-        # Extract center 5 seconds
-        start_idx = max(0, int(len(audio_data) / 2 - target_samples / 2))
-        end_idx = min(len(audio_data), start_idx + target_samples)
-        center_audio = audio_data[start_idx:end_idx]
-
-        if len(center_audio) < target_samples:
-            center_audio = np.pad(center_audio, 
-                                  (0, target_samples - len(center_audio)), 
-                                  mode='constant')
-
-        mel_spec = audio2melspec(center_audio, cfg)
-        
-        if mel_spec.shape != cfg.TARGET_SHAPE:
-            mel_spec = cv2.resize(mel_spec, cfg.TARGET_SHAPE, interpolation=cv2.INTER_LINEAR)
-
-        return mel_spec.astype(np.float32)
-        
-    except Exception as e:
-        print(f"Error processing {audio_path}: {e}")
-        return None
-
-
-def generate_spectrograms(df, cfg):
-    """Generate spectrograms from audio files"""
-    print("Generating mel spectrograms from audio files...")
-    start_time = time.time()
-
-    all_bird_data = {}
-    errors = []
-
-    for i, row in tqdm(df.iterrows(), total=len(df)):
-        if cfg.debug and i >= 1000:
-            break
-        
-        try:
-            samplename = row['samplename']
-            filepath = row['filepath']
-            
-            mel_spec = process_audio_file(filepath, cfg)
-            
-            if mel_spec is not None:
-                all_bird_data[samplename] = mel_spec
-            
-        except Exception as e:
-            print(f"Error processing {row.filepath}: {e}")
-            errors.append((row.filepath, str(e)))
-
-    end_time = time.time()
-    print(f"Processing completed in {end_time - start_time:.2f} seconds")
-    print(f"Successfully processed {len(all_bird_data)} files out of {len(df)}")
-    print(f"Failed to process {len(errors)} files")
-    
-    return all_bird_data
 
 
 class BirdCLEFDatasetFromNPY(Dataset):
@@ -190,10 +52,10 @@ class BirdCLEFDatasetFromNPY(Dataset):
         self.label_to_idx = {label: idx for idx, label in enumerate(self.species_ids)}
 
         if 'filepath' not in self.df.columns:
-            self.df['filepath'] = self.cfg.train_datadir + '/' + self.df.filename
+            self.df['filepath'] = self.df['filename'].map(lambda x: join(cfg.train_datadir, x))
         
         if 'samplename' not in self.df.columns:
-            self.df['samplename'] = self.df.filename.map(lambda x: x.split('/')[0] + '-' + x.split('/')[-1].split('.')[0])
+            self.df['samplename'] = self.df['filename'].map(lambda x: f'{dirname(x)}-{splitext(basename(x))[0]}' )
 
         sample_names = set(self.df['samplename'])
         if self.spectrograms:
@@ -201,7 +63,7 @@ class BirdCLEFDatasetFromNPY(Dataset):
             print(f"Found {found_samples} matching spectrograms for {mode} dataset out of {len(self.df)} samples")
         
         if cfg.debug:
-            self.df = self.df.sample(min(1000, len(self.df)), random_state=cfg.seed).reset_index(drop=True)
+            self.df = self.df.sample(min(100, len(self.df)), random_state=cfg.seed).reset_index(drop=True)
     
     def __len__(self):
         return len(self.df)
@@ -211,10 +73,7 @@ class BirdCLEFDatasetFromNPY(Dataset):
         samplename = row['samplename']
         spec = None
 
-        if self.spectrograms and samplename in self.spectrograms:
-            spec = self.spectrograms[samplename]
-        elif not self.cfg.LOAD_DATA:
-            spec = process_audio_file(row['filepath'], self.cfg)
+        spec = self.spectrograms[samplename]
 
         if spec is None:
             spec = np.zeros(self.cfg.TARGET_SHAPE, dtype=np.float32)
@@ -593,9 +452,8 @@ def calculate_auc(targets, outputs):
     return np.mean(aucs) if aucs else 0.0
 
 
-def run_training(df, cfg, now_str):
-    """Training function that can either use pre-computed spectrograms or generate them on-the-fly"""
-
+def run_training(cfg, spectrograms):
+    df = pd.read_csv(cfg.train_csv)
     taxonomy_df = pd.read_csv(cfg.taxonomy_csv)
     species_ids = taxonomy_df['primary_label'].tolist()
     cfg.num_classes = len(species_ids)
@@ -603,24 +461,6 @@ def run_training(df, cfg, now_str):
     if cfg.debug:
         cfg.update_debug_settings()
 
-    spectrograms = None
-    if cfg.LOAD_DATA:
-        print("Loading pre-computed mel spectrograms from NPY file...")
-        try:
-            spectrograms = np.load(cfg.spectrogram_npy, allow_pickle=True).item()
-            print(f"Loaded {len(spectrograms)} pre-computed mel spectrograms")
-        except Exception as e:
-            print(f"Error loading pre-computed spectrograms: {e}")
-            print("Will generate spectrograms on-the-fly instead.")
-            cfg.LOAD_DATA = False
-    
-    if not cfg.LOAD_DATA:
-        print("Will generate spectrograms on-the-fly during training.")
-        if 'filepath' not in df.columns:
-            df['filepath'] = cfg.train_datadir + '/' + df.filename
-        if 'samplename' not in df.columns:
-            df['samplename'] = df.filename.map(lambda x: x.split('/')[0] + '-' + x.split('/')[-1].split('.')[0])
-        
     skf = StratifiedKFold(n_splits=cfg.n_fold, shuffle=True, random_state=cfg.seed)
     
     best_scores = []
@@ -631,7 +471,7 @@ def run_training(df, cfg, now_str):
 
         wandb.init(
             project='birdclefplus_2025',
-            name=f'{cfg.exp_name}_{now_str}_f{fold}',
+            name=f'{cfg.exp_name}_f{fold}',
             config=cfg.to_dict()
         )
 
@@ -721,7 +561,7 @@ def run_training(df, cfg, now_str):
                     'val_auc': val_auc,
                     'train_auc': train_auc,
                     'cfg': cfg
-                }, join(cfg.OUTPUT_DIR, f"{cfg.exp_name}_{now_str}", f"model_{epoch:02}_f{fold}.pth"))
+                }, join(cfg.OUTPUT_DIR, cfg.exp_name, f"model_{epoch:02}_f{fold}-{best_auc}.pth"))
         
         best_scores.append(best_auc)
         print(f"\nBest AUC for fold {fold}: {best_auc:.4f} at epoch {best_epoch}")
@@ -742,24 +582,20 @@ def run_training(df, cfg, now_str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train BirdCLEF model")
-    parser.add_argument('-c', '--config', type=str, default='configs/default.yaml', help='Path to config file')
+    parser.add_argument('-c', '--config', type=str, default='configs/debug.yaml', help='Path to config file')
     args = parser.parse_args()
-    cfg = CFG(args.config)
-
+    cfg = Config(args.config)
     now_str = datetime.datetime.now(datetime.timezone.utc).strftime("%d-%m_%H-%M-%S")
+    cfg.exp_name = f"{splitext(basename(args.config))[0]}_{now_str}"
 
     set_seed(cfg.seed)
-    os.makedirs(join(cfg.OUTPUT_DIR, f"{cfg.exp_name}_{now_str}"), exist_ok=True)
+    load_dotenv()
+    wandb.login()
 
-    train_df = pd.read_csv(cfg.train_csv)
+    os.makedirs(join(cfg.OUTPUT_DIR, cfg.exp_name), exist_ok=True)
 
+    print("Precomputing mel spectrograms...")
+    spectrograms = process_data(cfg)
     print("\nStarting training...")
-    print(f"LOAD_DATA is set to {cfg.LOAD_DATA}")
-    if cfg.LOAD_DATA:
-        print("Using pre-computed mel spectrograms from NPY file")
-    else:
-        print("Will generate spectrograms on-the-fly during training")
-    
-    run_training(train_df, cfg, now_str)
-    
+    run_training(cfg, spectrograms)
     print("\nTraining complete!")

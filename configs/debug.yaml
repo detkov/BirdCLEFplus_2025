@@ -1,8 +1,6 @@
-exp_name: '002'
-
 # Random seed for reproducibility
 seed: 2025
-debug: false
+debug: true
 num_workers: 0
 
 # Paths
@@ -12,7 +10,7 @@ train_csv: '../input/birdclef-2025/train.csv'
 test_soundscapes: '../input/birdclef-2025/test_soundscapes'
 submission_csv: '../input/birdclef-2025/sample_submission.csv'
 taxonomy_csv: '../input/birdclef-2025/taxonomy.csv'
-spectrogram_npy: '../input/birdclef-2025-precomputed/01/melspec.npy'
+precomputed_filename: 'melspec.npy'
 
 # Model configuration
 model_name: 'efficientnet_b0'
@@ -20,7 +18,7 @@ pretrained: true
 in_channels: 1
 
 # Data loading and preprocessing
-LOAD_DATA: true
+PRECOMPUTE_DATA: true
 FS: 32000
 TARGET_DURATION: 5.0
 TARGET_SHAPE: [256, 256]
@@ -31,10 +29,11 @@ HOP_LENGTH: 512
 N_MELS: 128
 FMIN: 50
 FMAX: 14000
+MINMAX_NORM: true
 
 # Training parameters
 device: 'cuda'  # Will be overridden by code
-epochs: 20
+epochs: 10
 batch_size: 32
 criterion: 'BCEWithLogitsLoss'
 
@@ -50,7 +49,7 @@ weight_decay: 1.0e-5
 # Scheduler settings
 scheduler: 'CosineAnnealingLR'
 min_lr: 1.0e-6
-T_max: 20  # Same as epochs
+T_max: 10  # Same as epochs
 
 # Augmentation parameters
 aug_prob: 0.5
