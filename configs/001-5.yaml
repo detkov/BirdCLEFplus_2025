@@ -10,6 +10,7 @@ train_csv: '../input/birdclef-2025/train.csv'
 test_soundscapes: '../input/birdclef-2025/test_soundscapes'
 submission_csv: '../input/birdclef-2025/sample_submission.csv'
 taxonomy_csv: '../input/birdclef-2025/taxonomy.csv'
+precomputerd_datadir: '../input/birdclef-2025-precomputed'
 precomputed_filename: 'melspec.npy'
 
 # Model configuration

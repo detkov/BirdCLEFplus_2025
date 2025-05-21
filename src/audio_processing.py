@@ -5,7 +5,7 @@ import os
 import time
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from os.path import basename, dirname, join, splitext
+from os.path import basename, dirname, join, splitext, exists
 
 import cv2
 import librosa
@@ -32,7 +32,6 @@ def audio2melspec(audio_data, cfg):
         n_mels=cfg.N_MELS,
         fmin=cfg.FMIN,
         fmax=cfg.FMAX,
-        power=2.0
     )
 
     mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
@@ -68,7 +67,13 @@ def process_single_sample(row, cfg):
     return row.samplename, mel_spec.astype(np.float32)
 
 
-def process_data(cfg, num_threads=None):
+def process_data(cfg, num_threads=None, save=True):
+    melspec_id = get_melspec_id(cfg)
+    melspec_path = join(cfg.precomputerd_datadir, melspec_id, cfg.precomputed_filename)
+    if exists(melspec_path):
+        print(f"Mel spectrograms already exist at {melspec_path}. Skipping processing.")
+        return np.load(melspec_path, allow_pickle=True).item()
+
     if num_threads is None:
         # Use number of CPU cores if not specified
         num_threads = os.cpu_count()
@@ -100,8 +105,23 @@ def process_data(cfg, num_threads=None):
 
     end_time = time.time()
     print(f"Processing is completed in {end_time - start_time:.2f} seconds")
+    
+    if save:
+        print(f"Saving mel spectrograms to {melspec_path}...")
+        os.makedirs(dirname(melspec_path), exist_ok=True)
+        np.save(melspec_path, spectrograms)
+        print(f"Mel spectrograms are saved to {melspec_path}")
 
     return spectrograms
+
+def get_melspec_id(cfg):
+    melspec_cfg_to_str = "-".join(map(lambda x: str(x).replace(" ", ""), [
+            cfg.N_FFT, cfg.HOP_LENGTH, cfg.N_MELS, cfg.FMIN, cfg.FMAX, cfg.MINMAX_NORM,
+            cfg.TARGET_DURATION, cfg.TARGET_SHAPE, cfg.FS
+        ])
+    )
+    
+    return melspec_cfg_to_str
 
 
 if __name__ == "__main__":

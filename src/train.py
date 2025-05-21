@@ -377,7 +377,7 @@ def train_one_epoch(model, loader, optimizer, criterion, device, cur_epoch, sche
         lr = optimizer.param_groups[0]['lr']
         
         wandb.log({
-            'step': current_step,
+            'stept': current_step,
             'train/loss': train_loss, 
             'train/auc': train_auc, 
             'train/lr': lr
@@ -444,7 +444,7 @@ def validate(model, loader, criterion, device, cur_epoch):
             val_auc = calculate_auc(targets, outputs)
             
             wandb.log({
-                'step': current_step,
+                'stepv': current_step,
                 'val/loss': val_loss, 
                 'val/auc': val_auc
             })
@@ -496,9 +496,10 @@ def run_training(cfg, spectrograms):
             name=f'{cfg.exp_name}_f{fold}',
             config=cfg.to_dict()
         )
-        wandb.define_metric("step")
-        wandb.define_metric("train/*", step_metric="step")
-        wandb.define_metric("val/*", step_metric="step")
+        wandb.define_metric("stept") 
+        wandb.define_metric("train/*", step_metric="stept")
+        wandb.define_metric("stepv") 
+        wandb.define_metric("val/*", step_metric="stepv")
         wandb.define_metric("epoch")
         wandb.define_metric("epoch/*", step_metric="epoch")
 

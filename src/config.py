@@ -24,7 +24,7 @@ class Config:
         # Convert relative paths to absolute
         base_dir = dirname(dirname(config_path))
         for key in ['OUTPUT_DIR', 'train_datadir', 'train_csv', 'test_soundscapes', 
-                    'submission_csv', 'taxonomy_csv']:
+                    'submission_csv', 'taxonomy_csv', 'precomputerd_datadir']:
             if hasattr(self, key):
                 path = getattr(self, key)
                 if path.startswith('../'):
