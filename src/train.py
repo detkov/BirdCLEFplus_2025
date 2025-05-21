@@ -174,8 +174,8 @@ class BirdCLEFModel(nn.Module):
             cfg.model_name,
             pretrained=cfg.pretrained,
             in_chans=cfg.in_channels,
-            drop_rate=0.2,
-            drop_path_rate=0.2
+            drop_rate=cfg.drop_rate,
+            drop_path_rate=cfg.drop_path_rate,
         )
         
         if 'efficientnet' in cfg.model_name:
@@ -268,12 +268,11 @@ def get_optimizer(model, cfg):
     return optimizer
 
 
-def get_scheduler(optimizer, cfg):
-   
+def get_scheduler(optimizer, cfg, steps_per_epoch=None):
     if cfg.scheduler == 'CosineAnnealingLR':
         scheduler = lr_scheduler.CosineAnnealingLR(
             optimizer,
-            T_max=cfg.T_max,
+            T_max=cfg.epochs,
             eta_min=cfg.min_lr
         )
     elif cfg.scheduler == 'ReduceLROnPlateau':
@@ -292,7 +291,13 @@ def get_scheduler(optimizer, cfg):
             gamma=0.5
         )
     elif cfg.scheduler == 'OneCycleLR':
-        scheduler = None  
+        scheduler = lr_scheduler.OneCycleLR(
+            optimizer,
+            max_lr=cfg.lr,
+            epochs=cfg.epochs,
+            steps_per_epoch=steps_per_epoch,
+            pct_start=cfg.pct_start,
+        )
     else:
         scheduler = None
         
@@ -509,16 +514,7 @@ def run_training(cfg, spectrograms):
         optimizer = get_optimizer(model, cfg)
         criterion = get_criterion(cfg)
         
-        if cfg.scheduler == 'OneCycleLR':
-            scheduler = lr_scheduler.OneCycleLR(
-                optimizer,
-                max_lr=cfg.lr,
-                steps_per_epoch=len(train_loader),
-                epochs=cfg.epochs,
-                pct_start=0.1
-            )
-        else:
-            scheduler = get_scheduler(optimizer, cfg)
+        scheduler = get_scheduler(optimizer, cfg, len(train_loader))
         
         best_auc = 0
         best_epoch = 0
