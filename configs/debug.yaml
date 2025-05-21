@@ -16,6 +16,8 @@ precomputed_filename: 'melspec.npy'
 model_name: 'efficientnet_b0'
 pretrained: true
 in_channels: 1
+drop_rate: 0.2
+drop_path_rate: 0.2
 
 # Data loading and preprocessing
 PRECOMPUTE_DATA: true

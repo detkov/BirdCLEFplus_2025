@@ -314,8 +314,7 @@ def get_criterion(cfg):
     return criterion
 
 
-def train_one_epoch(model, loader, optimizer, criterion, device, scheduler=None):
-    
+def train_one_epoch(model, loader, optimizer, criterion, device, cur_epoch, scheduler=None):
     model.train()
     losses = []
     all_targets = []
@@ -323,7 +322,10 @@ def train_one_epoch(model, loader, optimizer, criterion, device, scheduler=None)
     
     pbar = tqdm(enumerate(loader), total=len(loader), desc="Training")
     
+    global_step = cur_epoch * len(loader)
+    
     for step, batch in pbar:
+        current_step = global_step + step
         if isinstance(batch['melspec'], list):
             batch_outputs = []
             batch_losses = []
@@ -370,11 +372,17 @@ def train_one_epoch(model, loader, optimizer, criterion, device, scheduler=None)
         all_targets.append(targets)
         losses.append(loss if isinstance(loss, float) else loss.item())
         
-        
         train_loss = np.mean(losses[-cfg.batch_size:]) if losses else 0
         train_auc = calculate_auc(targets, outputs)
         lr = optimizer.param_groups[0]['lr']
-        wandb.log({'train/loss': train_loss, 'train/auc': train_auc, 'train/lr': lr})
+        
+        wandb.log({
+            'step': current_step,
+            'train/loss': train_loss, 
+            'train/auc': train_auc, 
+            'train/lr': lr
+        })
+        
         pbar.set_postfix({
             'loss': train_loss,
             'lr': lr
@@ -388,15 +396,19 @@ def train_one_epoch(model, loader, optimizer, criterion, device, scheduler=None)
     return avg_loss, auc
 
 
-def validate(model, loader, criterion, device):
-   
+def validate(model, loader, criterion, device, cur_epoch):
     model.eval()
     losses = []
     all_targets = []
     all_outputs = []
     
+    global_step = cur_epoch * len(loader)
+    
     with torch.inference_mode():
-        for batch in tqdm(loader, desc="Validation"):
+        pbar = tqdm(enumerate(loader), total=len(loader), desc="Validation")
+        
+        for step, batch in pbar:
+            current_step = global_step + step
             if isinstance(batch['melspec'], list):
                 batch_outputs = []
                 batch_losses = []
@@ -430,7 +442,12 @@ def validate(model, loader, criterion, device):
             losses.append(loss if isinstance(loss, float) else loss.item())
             val_loss = np.mean(losses[-cfg.batch_size:]) if losses else 0
             val_auc = calculate_auc(targets, outputs)
-            wandb.log({'val/loss': val_loss, 'val/auc': val_auc})
+            
+            wandb.log({
+                'step': current_step,
+                'val/loss': val_loss, 
+                'val/auc': val_auc
+            })
 
     all_outputs = np.concatenate(all_outputs)
     all_targets = np.concatenate(all_targets)
@@ -479,6 +496,11 @@ def run_training(cfg, spectrograms):
             name=f'{cfg.exp_name}_f{fold}',
             config=cfg.to_dict()
         )
+        wandb.define_metric("step")
+        wandb.define_metric("train/*", step_metric="step")
+        wandb.define_metric("val/*", step_metric="step")
+        wandb.define_metric("epoch")
+        wandb.define_metric("epoch/*", step_metric="epoch")
 
         print(f'\n{"="*30} Fold {fold} {"="*30}')
         
@@ -528,12 +550,17 @@ def run_training(cfg, spectrograms):
                 optimizer, 
                 criterion, 
                 cfg.device,
+                epoch,
                 scheduler if isinstance(scheduler, lr_scheduler.OneCycleLR) else None
             )
-            wandb.log({'train/loss_e': train_loss, 'train/auc_e': train_auc})
-            
-            val_loss, val_auc = validate(model, val_loader, criterion, cfg.device)
-            wandb.log({'val/loss_e': val_loss, 'val/auc_e': val_auc})
+            val_loss, val_auc = validate(model, val_loader, criterion, cfg.device, epoch)
+            wandb.log({
+                'epoch': epoch,
+                'epoch/train_loss': train_loss, 
+                'epoch/train_auc': train_auc, 
+                'epoch/val_loss': val_loss, 
+                'epoch/val_auc': val_auc
+            })
 
             if scheduler is not None and not isinstance(scheduler, lr_scheduler.OneCycleLR):
                 if isinstance(scheduler, lr_scheduler.ReduceLROnPlateau):
