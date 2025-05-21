@@ -282,7 +282,6 @@ def get_scheduler(optimizer, cfg, steps_per_epoch=None):
             factor=0.5,
             patience=2,
             min_lr=cfg.min_lr,
-            verbose=True
         )
     elif cfg.scheduler == 'StepLR':
         scheduler = lr_scheduler.StepLR(
