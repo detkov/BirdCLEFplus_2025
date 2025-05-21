@@ -3,6 +3,7 @@ output/
 *.DS_Store
 *.png
 wandb
+birdclefplus_2025_models/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

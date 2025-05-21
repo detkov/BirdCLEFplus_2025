@@ -37,6 +37,14 @@ uv run python -m src.audio_processing
 uv run python -m src.train -c configs/your_config.yaml
 ```
 
+### Upload models to Kaggle 
+
+```bash
+kaggle datasets init -p birdclefplus_2025_models
+kaggle datasets create -p birdclefplus_2025_models
+kaggle datasets version -p birdclefplus_2025_models -m "Update"
+```
+
 ## Journal
 
 ### 2025-05-18
@@ -49,6 +57,20 @@ These changes were made due to the seemingly clearer and full image. However, we
 
 ### 2025-05-19
 * Tested mel spectrograms precomputation — indeed, it increased the training speed.  
+
+## Experiments 
+
+* `configs/001-1.yaml` — `configs/001-8.yaml` are related to the melspec settings. The best ones are: 
+```
+N_FFT: 2048 (or 1024)
+HOP_LENGTH: 1024 (or 512)
+N_MELS: 128
+FMIN: 50 (or 20)
+FMAX: 14000 (or 16000)
+MINMAX_NORM: true
+```
+* `configs/002-1.yaml` — `configs/002-7.yaml` are related to the optimizer scheduler settings and batch size. The best ones are:
+```
 
 ## Hypotheses
 

@@ -580,8 +580,8 @@ def run_training(cfg, spectrograms):
                     'epoch': epoch,
                     'val_auc': val_auc,
                     'train_auc': train_auc,
-                    'cfg': cfg
-                }, join(cfg.OUTPUT_DIR, cfg.exp_name, f"model_{epoch:02}_f{fold}-{best_auc}.pth"))
+                    'cfg': cfg.to_dict()
+                }, join(cfg.OUTPUT_DIR, cfg.exp_name, f"model_{epoch:02}_f{fold}-{best_auc:.6f}.pth"))
         
         best_scores.append(best_auc)
         print(f"\nBest AUC for fold {fold}: {best_auc:.4f} at epoch {best_epoch}")
