@@ -272,7 +272,7 @@ def get_scheduler(optimizer, cfg, steps_per_epoch=None):
     if cfg.scheduler == 'CosineAnnealingLR':
         scheduler = lr_scheduler.CosineAnnealingLR(
             optimizer,
-            T_max=cfg.epochs,
+            T_max=cfg.T_max,
             eta_min=cfg.min_lr
         )
     elif cfg.scheduler == 'ReduceLROnPlateau':

@@ -82,7 +82,7 @@ MINMAX_NORM: true
 * `004-13.yaml`, `004-17.yaml`, `004-18.yaml` are changing number of epochs from 10 to 15 and `min_lr: 1.0e-6` to `min_lr: 1.0e-7`.
   * Based on both Local AUC and Public AUC, it is not clear whether these changes actually improve generalization ability, but it's clear that they overfit much worse
 
-## Results
+### Results
 
 | Experment name, fold | Local AUC | Public AUC | Details |
 |---|---|---|---|
@@ -109,7 +109,7 @@ MINMAX_NORM: true
 | 004-18, 0 | 0.95146 | - | - |
 
 
-## Hypotheses
+### Hypotheses
 
 [ ] Remove human voice [link1](https://www.kaggle.com/code/kdmitrie/bc25-separation-voice-from-data) [link2](https://www.kaggle.com/code/timothylovett/human-voice-removal-caution-around-ruther1)  
 [ ] Remove `mel_spec_norm`  
