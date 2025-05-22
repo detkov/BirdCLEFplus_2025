@@ -81,32 +81,45 @@ MINMAX_NORM: true
   * Based on both Local AUC and Public AUC, `256x256` is a better choice
 * `004-13.yaml`, `004-17.yaml`, `004-18.yaml` are changing number of epochs from 10 to 15 and `min_lr: 1.0e-6` to `min_lr: 1.0e-7`.
   * Based on both Local AUC and Public AUC, it is not clear whether these changes actually improve generalization ability, but it's clear that they overfit much worse
+* `005-1.yaml` — `005-10.yaml` are changing `lr` from `1.0e-3` to `1.0e-2` with the step of `0.1`.
+  * `lr: 3.0e-3` is the best one
+* `006-1.yaml` — `006-4.yaml` are changing `in_channels` from `1` to `3` and `pretrained` from `True` to `False`
 
 ### Results
 
 | Experment name, fold | Local AUC | Public AUC | Details |
 |---|---|---|---|
-| 001-1, 0 | 0.94536 | 0.747 | - |
-| 001-2, 0 | 0.94777 | - | - |
-| 001-3, 0 | 0.95217 | 0.751 | - |
-| 001-4, 0 | 0.94892 | - | - |
-| 001-5, 0 | 0.94621 | - | - |
-| 001-6, 0 | 0.94896 | - | - |
-| 001-7, 0 | 0.95190 | 0.779 | - |
-| 001-8, 0 | 0.95055 | - | - |
-| 002-1, 0 | 0.94536 | - | - |
-| 002-2, 0 | 0.94487 | - | - |
-| 002-3, 0 | 0.94789 | - | - |
-| 002-4, 0 | 0.94842 | - | - |
-| 002-5, 0 | 0.94152 | - | - |
-| 002-6, 0 | 0.94143 | - | - |
-| 002-7, 0 | 0.94771 | - | - |
+| 001-1, 0  | 0.94536 | 0.747 | - |
+| 001-2, 0  | 0.94777 | - | - |
+| 001-3, 0  | 0.95217 | 0.751 | - |
+| 001-4, 0  | 0.94892 | - | - |
+| 001-5, 0  | 0.94621 | - | - |
+| 001-6, 0  | 0.94896 | - | - |
+| 001-7, 0  | 0.95190 | 0.779 | - |
+| 001-8, 0  | 0.95055 | - | - |
+| 002-1, 0  | 0.94536 | - | - |
+| 002-2, 0  | 0.94487 | - | - |
+| 002-3, 0  | 0.94789 | - | - |
+| 002-4, 0  | 0.94842 | - | - |
+| 002-5, 0  | 0.94152 | - | - |
+| 002-6, 0  | 0.94143 | - | - |
+| 002-7, 0  | 0.94771 | - | - |
 | 003-13, 0 | 0.95079 | - | - |
 | 003-17, 0 | 0.95095 | 0.774 | - |
 | 003-18, 0 | 0.94993 | - | - |
 | 004-13, 0 | 0.95005 | - | - |
 | 004-17, 0 | 0.95103 | 0.765 | - |
 | 004-18, 0 | 0.95146 | - | - |
+| 005-1, 0  | 0.94534 | - | - |
+| 005-2, 0  | 0.94883 | - | - |
+| 005-3, 0  | 0.95130 | - | - |
+| 005-4, 0  | 0.94950 | - | - |
+| 005-5, 0  | 0.94731 | - | - |
+| 005-6, 0  | 0.93399 | - | - |
+| 005-7, 0  | 0.93703 | - | - |
+| 005-8, 0  | 0.92751 | - | - |
+| 005-9, 0  | 0.91582 | - | - |
+| 005-10, 0 | 0.91446 | - | - |
 
 
 ### Hypotheses
@@ -140,4 +153,7 @@ MINMAX_NORM: true
 [ ] Make prediction based on all 5s segments of the audio [link](https://www.kaggle.com/code/stefankahl/birdclef-2025-sample-submission)  
 [ ] Add albumentations [link](https://www.kaggle.com/code/gopidurgaprasad/audio-augmentation-albumentations)  
 [ ] Test extracting not the center 5 seconds, bu the first 5 seconds
-
+[x] Test 3 channels
+[x] Test ImageNet normalization for 3 channels if the weights are pretrained `T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),`
+[ ] Test melspec more thoroughly (`N_MELS`, `HOP_LENGTH`)
+[ ] 

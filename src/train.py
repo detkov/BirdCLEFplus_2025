@@ -20,6 +20,7 @@ from sklearn.model_selection import StratifiedKFold
 from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader, Dataset
 from tqdm.auto import tqdm
+import torchvision.transforms as T
 
 from src.audio_processing import process_data
 from src.config import Config
@@ -82,6 +83,14 @@ class BirdCLEFDatasetFromNPY(Dataset):
 
         spec = torch.tensor(spec, dtype=torch.float32).unsqueeze(0)  # Add channel dimension
 
+        if self.cfg.in_channels == 3:
+            spec = spec.repeat(1, self.cfg.in_channels, 1, 1)
+            if self.cfg.pretrained:
+                transformation = T.Compose([
+                    T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
+                ])
+                spec = transformation(spec)
+        
         if self.mode == "train" and random.random() < self.cfg.aug_prob:
             spec = self.apply_spec_augmentations(spec)
         
