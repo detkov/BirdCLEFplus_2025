@@ -56,21 +56,58 @@ Lookead at different `librosa.feature.melspectrogram` params:
 These changes were made due to the seemingly clearer and full image. However, we have to investigate it with training and validation. 
 
 ### 2025-05-19
-* Tested mel spectrograms precomputation — indeed, it increased the training speed.  
+* Tested mel spectrograms precomputation — indeed, it increased the training speed. 
+
+### 2025-05-21
+* Conducted experiments: `001`, `002`, `003`, `004`.  
 
 ## Experiments 
 
-* `configs/001-1.yaml` — `configs/001-8.yaml` are related to the melspec settings. The best ones are: 
+* `001-1.yaml` — `001-8.yaml` are related to the melspec settings. The best ones are: 
 ```
-N_FFT: 2048 (or 1024)
-HOP_LENGTH: 1024 (or 512)
+N_FFT: 2048
+HOP_LENGTH: 1024 (but 512 on Public LB)
 N_MELS: 128
-FMIN: 50 (or 20)
-FMAX: 14000 (or 16000)
+FMIN: 50 (but 20 on Public LB)
+FMAX: 14000 (but 16000 on Public LB)
 MINMAX_NORM: true
 ```
-* `configs/002-1.yaml` — `configs/002-7.yaml` are related to the optimizer scheduler settings and batch size. The best ones are:
-```
+* `002-1.yaml` — `002-7.yaml` are related to the optimizer scheduler settings and batch size. 
+  * Larger BS (32 -> 128) can yield better results — need to investigate further
+  * `weight_decay: 1.0e-2` is better than `weight_decay: 1.0e-5`
+  * `OneCycleLR` is really bad
+  * `ReduceLROnPlateau` can also get good results
+* `003-13.yaml`, `003-17.yaml`, `003-18.yaml` are changing resolution of `001-3`, `001-7`, `001-8` experiments from `256x256` to `224x224`
+  * Based on both Local AUC and Public AUC, `256x256` is a better choice
+* `004-13.yaml`, `004-17.yaml`, `004-18.yaml` are changing number of epochs from 10 to 15 and `min_lr: 1.0e-6` to `min_lr: 1.0e-7`.
+  * Based on both Local AUC and Public AUC, it is not clear whether these changes actually improve generalization ability, but it's clear that they overfit much worse
+
+## Results
+
+| Experment name, fold | Local AUC | Public AUC | Details |
+|---|---|---|---|
+| 001-1, 0 | 0.94536 | 0.747 | - |
+| 001-2, 0 | 0.94777 | - | - |
+| 001-3, 0 | 0.95217 | 0.751 | - |
+| 001-4, 0 | 0.94892 | - | - |
+| 001-5, 0 | 0.94621 | - | - |
+| 001-6, 0 | 0.94896 | - | - |
+| 001-7, 0 | 0.95190 | 0.779 | - |
+| 001-8, 0 | 0.95055 | - | - |
+| 002-1, 0 | 0.94536 | - | - |
+| 002-2, 0 | 0.94487 | - | - |
+| 002-3, 0 | 0.94789 | - | - |
+| 002-4, 0 | 0.94842 | - | - |
+| 002-5, 0 | 0.94152 | - | - |
+| 002-6, 0 | 0.94143 | - | - |
+| 002-7, 0 | 0.94771 | - | - |
+| 003-13, 0 | 0.95079 | - | - |
+| 003-17, 0 | 0.95095 | 0.774 | - |
+| 003-18, 0 | 0.94993 | - | - |
+| 004-13, 0 | 0.95005 | - | - |
+| 004-17, 0 | 0.95103 | 0.765 | - |
+| 004-18, 0 | 0.95146 | - | - |
+
 
 ## Hypotheses
 
@@ -79,8 +116,8 @@ MINMAX_NORM: true
 [ ] Test padding audio if it is less than 5s instead of copying it [link](https://www.kaggle.com/code/shionao7/bird-25-submission-regnety008-v1)  
 [ ] Maybe use TTA [link](https://www.kaggle.com/code/salmanahmedtamu/labels-tta-efficientnet-b0-pytorch-inference)  
 [ ] Test `HOP_LENGTH` up to 16  
-[ ] Test `FMIN` up to 20  
-[ ] Test `FMAX` up to 16000    
+[x] Test `FMIN` up to 20  
+[x] Test `FMAX` up to 16000    
 [ ] Test `N_MELS` up to 128
 [ ] Test model's `drop_rate` to something other than `0.2`  
 [ ] Test model's `drop_path_rate` to something other than `0.2`  
@@ -103,3 +140,4 @@ MINMAX_NORM: true
 [ ] Make prediction based on all 5s segments of the audio [link](https://www.kaggle.com/code/stefankahl/birdclef-2025-sample-submission)  
 [ ] Add albumentations [link](https://www.kaggle.com/code/gopidurgaprasad/audio-augmentation-albumentations)  
 [ ] Test extracting not the center 5 seconds, bu the first 5 seconds
+
