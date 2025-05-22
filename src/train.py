@@ -84,13 +84,13 @@ class BirdCLEFDatasetFromNPY(Dataset):
         spec = torch.tensor(spec, dtype=torch.float32).unsqueeze(0)  # Add channel dimension
 
         if self.cfg.in_channels == 3:
-            spec = spec.repeat(1, self.cfg.in_channels, 1, 1)
+            spec = spec.repeat(self.cfg.in_channels, 1, 1)
             if self.cfg.pretrained:
                 transformation = T.Compose([
                     T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
                 ])
                 spec = transformation(spec)
-        
+
         if self.mode == "train" and random.random() < self.cfg.aug_prob:
             spec = self.apply_spec_augmentations(spec)
         
@@ -120,7 +120,7 @@ class BirdCLEFDatasetFromNPY(Dataset):
             num_masks = random.randint(1, 3)
             for _ in range(num_masks):
                 width = random.randint(5, 20)
-                start = random.randint(0, spec.shape[2] - width)
+                start = random.randint(0, spec.shape[-1] - width)
                 spec[0, :, start:start+width] = 0
         
         # Frequency masking (vertical stripes)
@@ -128,7 +128,7 @@ class BirdCLEFDatasetFromNPY(Dataset):
             num_masks = random.randint(1, 3)
             for _ in range(num_masks):
                 height = random.randint(5, 20)
-                start = random.randint(0, spec.shape[1] - height)
+                start = random.randint(0, spec.shape[-2] - height)
                 spec[0, start:start+height, :] = 0
         
         # Random brightness/contrast

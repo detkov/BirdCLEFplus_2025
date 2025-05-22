@@ -84,6 +84,7 @@ MINMAX_NORM: true
 * `005-1.yaml` — `005-10.yaml` are changing `lr` from `1.0e-3` to `1.0e-2` with the step of `0.1`.
   * `lr: 3.0e-3` is the best one
 * `006-1.yaml` — `006-4.yaml` are changing `in_channels` from `1` to `3` and `pretrained` from `True` to `False`
+  * `in_channels: 3` with ImageNet normaliation qorks fine
 
 ### Results
 
@@ -120,6 +121,10 @@ MINMAX_NORM: true
 | 005-8, 0  | 0.92751 | - | - |
 | 005-9, 0  | 0.91582 | - | - |
 | 005-10, 0 | 0.91446 | - | - |
+| 006-1, 0 | 0.95190 | - | - |
+| 006-2, 0 | 0.92699 | - | - |
+| 006-3, 0 | 0.92410 | - | - |
+| 006-4, 0 | 0.95110 | - | - |
 
 
 ### Hypotheses
