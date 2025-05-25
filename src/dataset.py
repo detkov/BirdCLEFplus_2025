@@ -17,6 +17,8 @@ class BirdCLEFDatasetFromNPY(Dataset):
         self.mode = mode
 
         self.spectrograms = spectrograms
+        if self.spectrograms is None:
+            self.spectrograms = {}
         
         taxonomy_df = pd.read_csv(self.cfg.taxonomy_csv)
         self.species_ids = taxonomy_df['primary_label'].tolist()

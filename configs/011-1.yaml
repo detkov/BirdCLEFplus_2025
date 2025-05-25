@@ -1,6 +1,6 @@
 # Random seed for reproducibility
 seed: 2025
-debug: true
+debug: false
 num_workers: 0
 
 # Paths
@@ -36,16 +36,16 @@ MINMAX_NORM: true
 # Training parameters
 device: 'cuda'  # Will be overridden by code
 epochs: 10
-batch_size: 32
+batch_size: 128
 criterion: 'BCEWithLogitsLoss'
 
 # Cross-validation
 n_fold: 5
-selected_folds: [0, 1, 2, 3, 4]
+selected_folds: [0]
 
 # Optimizer settings
 optimizer: 'AdamW'
-lr: 5.0e-4
+lr: 3.0e-3
 weight_decay: 1.0e-2
 
 # Scheduler settings

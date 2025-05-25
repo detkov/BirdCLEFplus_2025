@@ -464,10 +464,7 @@ if __name__ == "__main__":
     os.makedirs(join(cfg.OUTPUT_DIR, cfg.exp_name), exist_ok=True)
 
     print("Precomputing mel spectrograms...")
-    if False:
-        spectrograms = process_data(cfg)
-    else:
-        spectrograms = None
+    spectrograms = process_data(cfg)
     print("\nStarting training...")
     run_training(cfg, spectrograms)
     print("\nTraining complete!")

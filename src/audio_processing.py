@@ -46,7 +46,7 @@ def audio2melspec(audio_data, cfg):
     return mel_spec_db
 
 
-def process_single_sample(audio_path, cfg, crop_position="random"):
+def process_single_sample(audio_path, cfg, crop_position="middle"):
     audio_data, _ = librosa.load(audio_path, sr=cfg.FS)
     target_samples = int(cfg.TARGET_DURATION * cfg.FS)
 
