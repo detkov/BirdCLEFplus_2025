@@ -1,5 +1,3 @@
-
-
 import inspect
 from os.path import abspath, dirname, join
 
@@ -24,7 +22,7 @@ class Config:
         # Convert relative paths to absolute
         base_dir = dirname(dirname(config_path))
         for key in ['OUTPUT_DIR', 'train_datadir', 'train_csv', 'test_soundscapes', 
-                    'submission_csv', 'taxonomy_csv', 'precomputerd_datadir']:
+                    'submission_csv', 'taxonomy_csv', 'precomputerd_datadir', 'voice_datadir']:
             if hasattr(self, key):
                 path = getattr(self, key)
                 if path.startswith('../'):

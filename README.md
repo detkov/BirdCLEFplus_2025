@@ -24,6 +24,7 @@ chmod 600 ~/.kaggle/kaggle.json
 ```bash
 kaggle competitions download -p input -c birdclef-2025
 unzip input/birdclef-2025.zip -d input/birdclef-2025/
+kaggle datasets download kdmitrie/bc25-separation-voice-from-data-by-silero-vad -p input/voice_data --unzip
 ```
 
 If you wish to do manual data precomputation, you can run the following command:
@@ -160,8 +161,8 @@ MINMAX_NORM: true
 [ ] Test audio denoising [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu/notebook)  
 [ ] Test `FocalLossBCE` [link](https://www.kaggle.com/code/hideyukizushi/bird25-onlyinf-v2-s-focallossbce-cv-962-lb-829)  
 [ ] Make prediction based on all 5s segments of the audio [link](https://www.kaggle.com/code/stefankahl/birdclef-2025-sample-submission)  
-[ ] Add albumentations [link](https://www.kaggle.com/code/gopidurgaprasad/audio-augmentation-albumentations)  
-[ ] Test extracting not the center 5 seconds, bu the first 5 seconds
+[ ] Add albumentations  
+[ ] Test extracting not the center 5 seconds, but the first 5 seconds
 [x] Test 3 channels
 [x] Test ImageNet normalization for 3 channels if the weights are pretrained `T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),`
 [ ] Test melspec more thoroughly (`N_MELS`, `HOP_LENGTH`)

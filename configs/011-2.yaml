@@ -33,8 +33,8 @@ N_MELS: 256
 FMIN: 20
 FMAX: 16000
 MINMAX_NORM: true
-filter_voice: false 
-filter_voice_method: 'none' # Options: 'longest', 'concat'
+filter_voice: true 
+filter_voice_method: 'longest' # Options: 'longest', 'concat'
 
 # Training parameters
 device: 'cuda'  # Will be overridden by code
