@@ -3,7 +3,7 @@ output/
 *.DS_Store
 *.png
 wandb
-birdclefplus_2025_models/
+birdclefplus-2025-models/
 uv.lock
 
 # Byte-compiled / optimized / DLL files

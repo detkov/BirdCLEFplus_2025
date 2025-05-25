@@ -20,7 +20,6 @@ chmod 600 ~/.kaggle/kaggle.json
 ```
 
 ### Dataset download and processing
-
 ```bash
 kaggle competitions download -p input -c birdclef-2025
 unzip input/birdclef-2025.zip -d input/birdclef-2025/
@@ -39,11 +38,24 @@ uv run python -m src.train -c configs/your_config.yaml
 ```
 
 ### Upload models to Kaggle 
-
+If you do not have the dataset `birdclefplus-2025-models` on Kaggle, you can create it by running the following commands.
 ```bash
-kaggle datasets init -p birdclefplus_2025_models
-kaggle datasets create -p birdclefplus_2025_models
-kaggle datasets version -p birdclefplus_2025_models -m "Update"
+kaggle datasets init -p birdclefplus-2025-models
+```
+Then fix the `birdclefplus-2025-models/dataset-metadata.json`. After that, run the following commands to upload your models: 
+```bash
+kaggle datasets create -p birdclefplus-2025-models
+kaggle datasets version -p birdclefplus-2025-models -m "Update"
+```  
+
+Or, if the dataset already exists, you can use the following command to update it:
+```bash
+kaggle datasets download <your_username>/birdclefplus-2025-models -p ./birdclefplus-2025-models --unzip
+kaggle datasets init -p birdclefplus-2025-models
+```
+Then fix the `birdclefplus-2025-models/dataset-metadata.json`. After that, run the following commands to upload your models: 
+```bash
+kaggle datasets version -p birdclefplus-2025-models -m "Update"
 ```
 
 ## Journal
@@ -92,7 +104,8 @@ MINMAX_NORM: true
 * `006-1.yaml` — `006-4.yaml` are changing `in_channels` from `1` to `3` and `pretrained` from `True` to `False`
   * `in_channels: 3` with ImageNet normaliation qorks fine
 * `011-1.yaml` — `011-3.yaml` are changing voice processing. `1` is not filtering out human voice, `2` is filtering out human voice and leave only the longest segment without voice, `3` is filtering out human voice and leaving concatenated segments without voice.
-  * `1` is the baset one based on Local AUC.
+  * `1` is the best one based on Local AUC.
+
 ### Results
 
 | Experment name, fold | Local AUC | Public AUC | Details |
@@ -132,24 +145,25 @@ MINMAX_NORM: true
 | 006-2, 0 | 0.92699 | - | - |
 | 006-3, 0 | 0.92410 | - | - |
 | 006-4, 0 | 0.95110 | - | - |
-| 011-1, 0 | 0.95403 | - | - |
-| 011-2, 0 | 0.95004 | - | - |
-| 011-3, 0 | 0.94818 | - | - |
+| 011-1, 0 | 0.95403 | 0.732 | - |
+| 011-2, 0 | 0.95004 | 0.762 | - |
+| 011-3, 0 | 0.94818 | 0.763 | - |
 
 
 ### Hypotheses
 
-[ ] Remove human voice [link1](https://www.kaggle.com/code/kdmitrie/bc25-separation-voice-from-data) [link2](https://www.kaggle.com/code/timothylovett/human-voice-removal-caution-around-ruther1)  
-[ ] Remove `mel_spec_norm`  
-[ ] Test padding audio if it is less than 5s instead of copying it [link](https://www.kaggle.com/code/shionao7/bird-25-submission-regnety008-v1)  
-[ ] Maybe use TTA [link](https://www.kaggle.com/code/salmanahmedtamu/labels-tta-efficientnet-b0-pytorch-inference)  
-[ ] Test `HOP_LENGTH` up to 16  
-[x] Test `FMIN` up to 20  
-[x] Test `FMAX` up to 16000    
-[ ] Test `N_MELS` up to 128
-[ ] Test model's `drop_rate` to something other than `0.2`  
-[ ] Test model's `drop_path_rate` to something other than `0.2`  
-[ ] Testa different model's classifier [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu)
+- [ ] Remove human voice [link1](https://www.kaggle.com/code/kdmitrie/bc25-separation-voice-from-data) [link2](https://www.kaggle.com/code/timothylovett/human-voice-removal-caution-around-ruther1)  
+- [ ] Remove `mel_spec_norm`  
+- [ ] Test padding audio if it is less than 5s instead of copying it [link](https://www.kaggle.com/code/shionao7/bird-25-submission-regnety008-v1)  
+- [ ] Maybe use TTA [link](https://www.kaggle.com/code/salmanahmedtamu/labels-tta-efficientnet-b0-pytorch-inference)  
+- [ ] Test `HOP_LENGTH` up to 16  
+- [x] Test `FMIN` up to 20  
+- [x] Test `FMAX` up to 16000    
+- [ ] Test `N_MELS` up to 128
+- [ ] Test 
+- [ ] Test model's `drop_rate` to something other than `0.2`  
+- [ ] Test model's `drop_path_rate` to something other than `0.2`  
+- [ ] Testa different model's classifier [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu)
 ```python
         self.classifier = nn.Sequential(
             nn.Linear(backbone_out, 512),
@@ -163,12 +177,12 @@ MINMAX_NORM: true
             nn.Linear(256, num_classes)
         )
 ```  
-[ ] Test audio denoising [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu/notebook)  
-[ ] Test `FocalLossBCE` [link](https://www.kaggle.com/code/hideyukizushi/bird25-onlyinf-v2-s-focallossbce-cv-962-lb-829)  
-[ ] Make prediction based on all 5s segments of the audio [link](https://www.kaggle.com/code/stefankahl/birdclef-2025-sample-submission)  
-[ ] Add albumentations  
-[ ] Test extracting not the center 5 seconds, but the first 5 seconds
-[x] Test 3 channels
-[x] Test ImageNet normalization for 3 channels if the weights are pretrained `T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),`
-[ ] Test melspec more thoroughly (`N_MELS`, `HOP_LENGTH`)
-[ ] 
+- [ ] Test audio denoising [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu/notebook)  
+- [ ] Test `FocalLossBCE` [link](https://www.kaggle.com/code/hideyukizushi/bird25-onlyinf-v2-s-focallossbce-cv-962-lb-829)  
+- [ ] Make prediction based on all 5s segments of the audio [link](https://www.kaggle.com/code/stefankahl/birdclef-2025-sample-submission)  
+- [ ] Add albumentations  
+- [ ] Test extracting not the center 5 seconds, but the first 5 seconds
+- [x] Test 3 channels
+- [x] Test ImageNet normalization for 3 channels if the weights are pretrained `T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),`
+- [ ] Test melspec more thoroughly (`N_MELS`, `HOP_LENGTH`)
+- [ ] 
