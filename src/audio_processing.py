@@ -60,7 +60,7 @@ def remove_voice(audio_data, voice_segment, FS, filter_voice_method):
 
     if prev_end < len(audio_data):
         non_voice_segments.append((prev_end, len(audio_data)))
-    print(non_voice_segments)
+
     if filter_voice_method == "longest":
         longest_segment = None
         max_duration = 0
@@ -69,13 +69,9 @@ def remove_voice(audio_data, voice_segment, FS, filter_voice_method):
             if len(segment) > max_duration:
                 max_duration = len(segment)
                 longest_segment = segment
-        print(f"Longest non-voice segment duration: {len(longest_segment) / FS:.2f} seconds")
         return longest_segment
     elif filter_voice_method == "concat":
-        segments = [audio_data[start:end] for start, end in non_voice_segments]
-        concatenated_segment = np.concatenate(segments) if segments else np.array([])
-        print(f"Concatenated non-voice segment duration: {len(concatenated_segment) / FS:.2f} seconds")
-        return concatenated_segment
+        return np.concatenate([audio_data[start:end] for start, end in non_voice_segments])
     else:
         raise ValueError(f"Invalid filter_voice_method: {filter_voice_method}. Must be one of: longest, concat")
 
