@@ -24,19 +24,9 @@ import torchvision.transforms as T
 
 from src.audio_processing import process_data
 from src.config import Config
+from src.utils import set_seed
 
 warnings.filterwarnings("ignore")
-
-
-def set_seed(seed: int):
-    random.seed(seed)
-    os.environ["PYTHONHASHSEED"] = str(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
 
 
 class BirdCLEFDatasetFromNPY(Dataset):

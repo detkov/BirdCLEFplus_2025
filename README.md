@@ -60,6 +60,10 @@ These changes were made due to the seemingly clearer and full image. However, we
 
 ### 2025-05-21
 * Conducted experiments: `001`, `002`, `003`, `004`.  
+### 2025-05-22
+* Conducted experiments: `005`, `006`.
+### 2025-05-25
+* `N_MELS` has to be 256!!! Because it translates into the height of the meplspec image.
 
 ## Experiments 
 

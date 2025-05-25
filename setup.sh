@@ -7,3 +7,4 @@ chmod 600 ~/.kaggle/kaggle.json
 mkdir input
 kaggle competitions download -p input -c birdclef-2025
 unzip input/birdclef-2025.zip -d input/birdclef-2025/
+rm -rf ~/.kaggle
