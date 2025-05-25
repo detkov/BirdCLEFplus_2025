@@ -64,7 +64,8 @@ These changes were made due to the seemingly clearer and full image. However, we
 ### 2025-05-22
 * Conducted experiments: `005`, `006`.
 ### 2025-05-25
-* `N_MELS` has to be 256!!! Because it translates into the height of the meplspec image.
+* `N_MELS` has to be 256!!! Because it translates into the height of the meplspec image.  
+* Changed short audio processing from copying to constant padding  
 
 ## Experiments 
 
@@ -90,7 +91,8 @@ MINMAX_NORM: true
   * `lr: 3.0e-3` is the best one
 * `006-1.yaml` — `006-4.yaml` are changing `in_channels` from `1` to `3` and `pretrained` from `True` to `False`
   * `in_channels: 3` with ImageNet normaliation qorks fine
-
+* `011-1.yaml` — `011-3.yaml` are changing voice processing. `1` is not filtering out human voice, `2` is filtering out human voice and leave only the longest segment without voice, `3` is filtering out human voice and leaving concatenated segments without voice.
+  * `1` is the baset one based on Local AUC.
 ### Results
 
 | Experment name, fold | Local AUC | Public AUC | Details |
@@ -130,6 +132,9 @@ MINMAX_NORM: true
 | 006-2, 0 | 0.92699 | - | - |
 | 006-3, 0 | 0.92410 | - | - |
 | 006-4, 0 | 0.95110 | - | - |
+| 011-1, 0 | 0.95403 | - | - |
+| 011-2, 0 | 0.95004 | - | - |
+| 011-3, 0 | 0.94818 | - | - |
 
 
 ### Hypotheses
