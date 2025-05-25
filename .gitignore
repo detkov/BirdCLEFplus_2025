@@ -4,6 +4,7 @@ output/
 *.png
 wandb
 birdclefplus_2025_models/
+uv.lock
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

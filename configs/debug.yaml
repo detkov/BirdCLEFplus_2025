@@ -21,7 +21,6 @@ drop_rate: 0.2
 drop_path_rate: 0.2
 
 # Data loading and preprocessing
-PRECOMPUTE_DATA: true
 FS: 32000
 TARGET_DURATION: 5.0
 TARGET_SHAPE: [256, 256]
