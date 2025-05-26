@@ -5,7 +5,7 @@ HOP_LENGTH: 512
 MINMAX_NORM: true
 N_FFT: 2048
 N_MELS: 256
-OUTPUT_DIR: /Users/detkov/coding/kaggle/BirdCLEFplus_2025/output
+OUTPUT_DIR: ../output
 TARGET_DURATION: 5.0
 TARGET_SHAPE:
 - 256
@@ -18,9 +18,8 @@ criterion: BCEWithLogitsLoss
 crop_position: middle
 debug: false
 device: cpu
-drop_path: 0.1
 drop_path_rate: 0.1
-drop_rate: 0.2
+drop_rate: 0.1
 epochs: 10
 filter_voice: false
 filter_voice_method: none
@@ -34,16 +33,16 @@ num_workers: 0
 optimizer: AdamW
 precompute_audio: true
 precomputed_filename: melspec.npy
-precomputerd_datadir: /Users/detkov/coding/kaggle/BirdCLEFplus_2025/input/birdclef-2025-precomputed
+precomputerd_datadir: ../input/birdclef-2025-precomputed
 pretrained: true
 scheduler: CosineAnnealingLR
 seed: 2025
 selected_folds:
 - 0
-submission_csv: /Users/detkov/coding/kaggle/BirdCLEFplus_2025/input/birdclef-2025/sample_submission.csv
-taxonomy_csv: /Users/detkov/coding/kaggle/BirdCLEFplus_2025/input/birdclef-2025/taxonomy.csv
-test_soundscapes: /Users/detkov/coding/kaggle/BirdCLEFplus_2025/input/birdclef-2025/test_soundscapes
-train_csv: /Users/detkov/coding/kaggle/BirdCLEFplus_2025/input/birdclef-2025/train.csv
-train_datadir: /Users/detkov/coding/kaggle/BirdCLEFplus_2025/input/birdclef-2025/train_audio
-voice_datadir: /Users/detkov/coding/kaggle/BirdCLEFplus_2025/input/voice_data
+submission_csv: ../input/birdclef-2025/sample_submission.csv
+taxonomy_csv: ../input/birdclef-2025/taxonomy.csv
+test_soundscapes: ../input/birdclef-2025/test_soundscapes
+train_csv: ../input/birdclef-2025/train.csv
+train_datadir: ../input/birdclef-2025/train_audio
+voice_datadir: ../input/voice_data
 weight_decay: 0.01
