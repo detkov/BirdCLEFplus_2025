@@ -17,7 +17,7 @@ brightness: true
 criterion: BCEWithLogitsLoss
 crop_position: middle
 debug: false
-device: cpu
+device: cuda
 drop_path_rate: 0.35
 drop_rate: 0.1
 epochs: 10
