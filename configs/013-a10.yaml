@@ -11,7 +11,7 @@ TARGET_SHAPE:
 - 256
 - 256
 T_max: 10
-aug_prob: 0.4
+aug_prob: 0.5
 batch_size: 128
 brightness: true
 criterion: BCEWithLogitsLoss

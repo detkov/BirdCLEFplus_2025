@@ -26,7 +26,7 @@ filter_voice_method: none
 in_channels: 1
 lr: 0.003
 min_lr: 1.0e-06
-mixup_alpha: 0.3
+mixup_alpha: 0.6
 model_name: efficientnet_b0
 n_fold: 5
 num_workers: 0

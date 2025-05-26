@@ -11,7 +11,7 @@ TARGET_SHAPE:
 - 256
 - 256
 T_max: 10
-aug_prob: 0.4
+aug_prob: 0.7
 batch_size: 128
 brightness: true
 criterion: BCEWithLogitsLoss
@@ -26,7 +26,7 @@ filter_voice_method: none
 in_channels: 1
 lr: 0.003
 min_lr: 1.0e-06
-mixup_alpha: 0.3
+mixup_alpha: 0.4
 model_name: efficientnet_b0
 n_fold: 5
 num_workers: 0

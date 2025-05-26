@@ -18,8 +18,8 @@ criterion: BCEWithLogitsLoss
 crop_position: middle
 debug: false
 device: cpu
-drop_path_rate: 0.5
-drop_rate: 0.5
+drop_path_rate: 0.2
+drop_rate: 0.2
 epochs: 10
 filter_voice: false
 filter_voice_method: none
