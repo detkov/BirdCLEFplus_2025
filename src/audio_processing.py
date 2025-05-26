@@ -23,7 +23,7 @@ warnings.filterwarnings("ignore")
 def get_melspec_id(cfg):
     melspec_cfg_to_str = "-".join(map(lambda x: str(x).replace(" ", ""), [
             cfg.N_FFT, cfg.HOP_LENGTH, cfg.N_MELS, cfg.FMIN, cfg.FMAX, cfg.MINMAX_NORM,
-            cfg.TARGET_DURATION, cfg.TARGET_SHAPE, cfg.FS, cfg.filter_voice, cfg.filter_voice_method,
+            cfg.TARGET_DURATION, cfg.TARGET_SHAPE, cfg.FS, cfg.filter_voice, cfg.filter_voice_method, cfg.crop_position
         ])
     )
     
@@ -76,7 +76,7 @@ def remove_voice(audio_data, voice_segment, FS, filter_voice_method):
         raise ValueError(f"Invalid filter_voice_method: {filter_voice_method}. Must be one of: longest, concat")
 
 
-def process_single_sample(audio_path, cfg, voice_segments, crop_position="middle"):
+def process_single_sample(audio_path, cfg, voice_segments):
     audio_data, _ = librosa.load(audio_path, sr=cfg.FS)
     target_samples = int(cfg.TARGET_DURATION * cfg.FS)
 
@@ -89,14 +89,14 @@ def process_single_sample(audio_path, cfg, voice_segments, crop_position="middle
     # Calculate valid start index range
     max_start_idx = len(audio_data) - target_samples
     
-    if crop_position == "start":
+    if cfg.crop_position == "start":
         start_idx = 0
-    elif crop_position == "middle":
+    elif cfg.crop_position == "middle":
         start_idx = max(0, min(max_start_idx, int(len(audio_data) / 2 - target_samples / 2)))
-    elif crop_position == "random":
+    elif cfg.crop_position == "random":
         start_idx = np.random.randint(0, max_start_idx + 1)
     else:
-        raise ValueError(f"Invalid crop_position: {crop_position}. Must be one of: start, middle, random")
+        raise ValueError(f"Invalid crop_position: {cfg.crop_position}. Must be one of: start, middle, random")
 
     end_idx = start_idx + target_samples
     audio_data = audio_data[start_idx:end_idx]

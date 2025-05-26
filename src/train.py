@@ -54,7 +54,7 @@ class BirdCLEFModel(nn.Module):
             self.backbone.reset_classifier(0, '')
         
         self.pooling = nn.AdaptiveAvgPool2d(1)
-            
+        
         self.feat_dim = backbone_out
         
         self.classifier = nn.Linear(backbone_out, cfg.num_classes)
@@ -64,7 +64,6 @@ class BirdCLEFModel(nn.Module):
             self.mixup_alpha = cfg.mixup_alpha
             
     def forward(self, x, targets=None):
-    
         if self.training and self.mixup_enabled and targets is not None:
             mixed_x, targets_a, targets_b, lam = self.mixup_data(x, targets)
             x = mixed_x
@@ -463,8 +462,11 @@ if __name__ == "__main__":
 
     os.makedirs(join(cfg.OUTPUT_DIR, cfg.exp_name), exist_ok=True)
 
-    print("Precomputing mel spectrograms...")
-    spectrograms = process_data(cfg)
+    if cfg.precompute_audio:
+        print("Precomputing mel spectrograms...")
+        spectrograms = process_data(cfg)
+    else:
+        spectrograms = None
     print("\nStarting training...")
     run_training(cfg, spectrograms)
     print("\nTraining complete!")

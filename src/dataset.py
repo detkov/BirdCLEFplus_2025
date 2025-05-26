@@ -1,3 +1,4 @@
+import pickle
 import random
 from os.path import basename, dirname, join, splitext
 
@@ -19,6 +20,13 @@ class BirdCLEFDatasetFromNPY(Dataset):
         self.spectrograms = spectrograms
         if self.spectrograms is None:
             self.spectrograms = {}
+            if self.cfg.filter_voice:
+                with open(join(cfg.voice_datadir, "train_voice_data.pkl"), "rb") as f:
+                    self.voice_segments_data = pickle.load(f)
+                    func = lambda x: f'{basename(dirname(x))}-{splitext(basename(x))[0]}'  # noqa: E731
+                    self.voice_segments_data = {func(key): value for key, value in self.voice_segments_data.items()}
+            else:
+                self.voice_segments_data = {}
         
         taxonomy_df = pd.read_csv(self.cfg.taxonomy_csv)
         self.species_ids = taxonomy_df['primary_label'].tolist()
@@ -50,7 +58,7 @@ class BirdCLEFDatasetFromNPY(Dataset):
 
         if spec is None:
             spec = np.zeros(self.cfg.TARGET_SHAPE, dtype=np.float32)
-            spec = process_single_sample(row['filepath'], self.cfg)
+            spec = process_single_sample(row['filepath'], self.cfg, self.voice_segments_data.get(samplename, None))
 
         spec = torch.tensor(spec, dtype=torch.float32).unsqueeze(0)  # Add channel dimension
 
@@ -103,12 +111,13 @@ class BirdCLEFDatasetFromNPY(Dataset):
                 spec[0, start:start+height, :] = 0
         
         # Random brightness/contrast
-        if random.random() < 0.5:
-            gain = random.uniform(0.8, 1.2)
-            bias = random.uniform(-0.1, 0.1)
-            spec = spec * gain + bias
-            spec = torch.clamp(spec, 0, 1) 
-            
+        if self.cfg.brightness:
+            if random.random() < 0.5:
+                gain = random.uniform(0.8, 1.2)
+                bias = random.uniform(-0.1, 0.1)
+                spec = spec * gain + bias
+                spec = torch.clamp(spec, 0, 1) 
+        
         return spec
     
     def encode_label(self, label):

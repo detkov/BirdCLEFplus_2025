@@ -24,6 +24,7 @@ drop_path_rate: 0.2
 FS: 32000
 TARGET_DURATION: 5.0
 TARGET_SHAPE: [256, 256]
+precompute_audio: true
 
 # Audio processing parameters
 N_FFT: 2048
@@ -32,6 +33,9 @@ N_MELS: 256
 FMIN: 20
 FMAX: 16000
 MINMAX_NORM: true
+crop_position: 'middle'  # Options: 'start', 'middle', 'random'
+filter_voice: false 
+filter_voice_method: 'none' # Options: 'longest', 'concat'
 
 # Training parameters
 device: 'cuda'  # Will be overridden by code
@@ -56,3 +60,4 @@ T_max: 10  # Same as epochs
 # Augmentation parameters
 aug_prob: 0.5
 mixup_alpha: 0.5
+brightness: true
