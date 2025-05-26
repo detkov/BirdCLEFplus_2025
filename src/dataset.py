@@ -44,7 +44,7 @@ class BirdCLEFDatasetFromNPY(Dataset):
             print(f"Found {found_samples} matching spectrograms for {mode} dataset out of {len(self.df)} samples")
         
         if cfg.debug:
-            self.df = self.df.sample(min(100, len(self.df)), random_state=cfg.seed).reset_index(drop=True)
+            self.df = self.df.sample(min(128, len(self.df)), random_state=cfg.seed).reset_index(drop=True)
     
     def __len__(self):
         return len(self.df)
