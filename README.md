@@ -105,7 +105,16 @@ MINMAX_NORM: true
   * `in_channels: 3` with ImageNet normaliation qorks fine
 * `011-1.yaml` — `011-3.yaml` are changing voice processing. `1` is not filtering out human voice, `2` is filtering out human voice and leave only the longest segment without voice, `3` is filtering out human voice and leaving concatenated segments without voice.
   * `1` is the best one based on Local AUC.
-
+* `012-*` are changing the base model from `EfficientNet0` to `1`, `2`, `3` and `4` with `1` and `3` input channels. Other training parameters are the same.
+  * Only `EfficientNet3` with 3 channels is better than `EfficientNet0` with 1 channel. 
+* `013-a*` are changing the `aug_prob` and `mixup_alpha` parameters. 
+  * Turns out that different values of `mixup_alpha` do not change anything. Only `0` value can change, but _ ahve never tested it.
+  * Also, `aug_prob` of `0.5` is the best.
+* `013-d*` are changing the `drop_rate` and `drop_path_rate` parameters. 
+  * `drop_rate: 0.5` and `drop_path_rate: 0.2` are the best ones. The next is `drop_rate: 0.2` and `drop_path_rate: 0.35`.
+* `014-*` are changing the `precompute_data` parameter and adds all 5 folds to the training.
+  * `precompute_data` param does not change anything, but the speed (x30) of training.
+  * All 5 folds have 5 different results, from `0.94544` to `0.95592`.
 ### Results
 
 | Experment name, fold | Local AUC | Public AUC | Details |
@@ -148,7 +157,45 @@ MINMAX_NORM: true
 | 011-1, 0 | 0.95403 | 0.732 | - |
 | 011-2, 0 | 0.95004 | 0.762 | - |
 | 011-3, 0 | 0.94818 | 0.763 | - |
-
+| 012-10, 0 | 0.95403 | - | - |
+| 012-11, 0 | 0.85695 | - | - |
+| 012-12, 0 | 0.94916 | - | - |
+| 012-13, 0 | 0.95021 | - | - |
+| 012-14, 0 | 0.94993 | - | - |
+| 012-30, 0 | 0.94919 | - | - |
+| 012-31, 0 | 0.90809 | - | - |
+| 012-32, 0 | 0.95438 | 0.746 | - |
+| 012-33, 0 | 0.95227 | - | - |
+| 012-34, 0 | 0.95086 | 0.742 | - |
+| 013-a0, 0 | 0.95162 | - | - |
+| 013-a5, 0 | 0.94826 | - | - |
+| 013-a10, 0 | 0.95403 | - | - |
+| 013-a15, 0 | 0.95085 | - | - |
+| 013-a20, 0 | 0.95222 | - | - |
+| 013-d0, 0 | 0.94865 | - | - |
+| 013-d1, 0 | 0.94600 | - | - |
+| 013-d2, 0 | 0.95319 | - | - |
+| 013-d3, 0 | 0.95376 | - | - |
+| 013-d4, 0 | 0.95186 | - | - |
+| 013-d5, 0 | 0.94825 | - | - |
+| 013-d6, 0 | 0.94824 | - | - |
+| 013-d7, 0 | 0.95255 | - | - |
+| 013-d8, 0 | 0.95196 | - | - |
+| 013-d9, 0 | 0.95023 | - | - |
+| 013-d10, 0 | 0.94682 | - | - |
+| 013-d11, 0 | 0.95443 | 0.759 | - |
+| 013-d12, 0 | 0.95529 | 0.764 | - |
+| 013-d13, 0 | 0.95204 | - | - |
+| 013-d14, 0 | 0.94606 | - | - |
+| 013-d15, 0 | 0.94986 | - | - |
+| 013-d16, 0 | 0.95272 | - | - |
+| 013-d17, 0 | 0.95022 | - | - |
+| 013-d18, 0 | 0.95159 | - | - |
+| 013-d19, 0 | 0.94326 | - | - |
+| 013-d20, 0 | 0.95247 | - | - |
+| 013-d21, 0 | 0.95592 | 0.773 | - |
+| 013-d22, 0 | 0.95044 | - | - |
+| 013-d23, 0 | 0.95028 | - | - |
 
 ### Hypotheses
 
