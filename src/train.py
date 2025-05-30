@@ -57,8 +57,23 @@ class BirdCLEFModel(nn.Module):
         self.pooling = nn.AdaptiveAvgPool2d(1)
         
         self.feat_dim = backbone_out
-        
-        self.classifier = nn.Linear(backbone_out, cfg.num_classes)
+        if cfg.model_classifier_type == 'mlp':
+            self.classifier = nn.Linear(backbone_out, cfg.num_classes)
+        elif cfg.model_classifier_type == 'complex':
+            self.classifier = nn.Sequential(
+                nn.Linear(backbone_out, 512),
+                nn.BatchNorm1d(512),
+                nn.LeakyReLU(0.1),
+                nn.Dropout(0.15),
+                nn.Linear(512, 256),
+                nn.BatchNorm1d(256),
+                nn.LeakyReLU(0.1),
+                nn.Dropout(0.1),
+                nn.Linear(256, cfg.num_classes)
+            )
+        else:
+            raise NotImplementedError(f"Classifier type {cfg.model_classifier_type} not implemented")
+
         
         self.mixup_enabled = hasattr(cfg, 'mixup_alpha') and cfg.mixup_alpha > 0
         if self.mixup_enabled:

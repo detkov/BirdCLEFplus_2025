@@ -225,7 +225,7 @@ MINMAX_NORM: true
 - [ ] Test 
 - [x] Test model's `drop_rate` to something other than `0.2`  
 - [x] Test model's `drop_path_rate` to something other than `0.2`  
-- [ ] Testa different model's classifier [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu)
+- [ ] Test a different model's classifier [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu)
 ```python
         self.classifier = nn.Sequential(
             nn.Linear(backbone_out, 512),
