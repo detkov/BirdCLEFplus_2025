@@ -108,13 +108,17 @@ MINMAX_NORM: true
 * `012-*` are changing the base model from `EfficientNet0` to `1`, `2`, `3` and `4` with `1` and `3` input channels. Other training parameters are the same.
   * Only `EfficientNet3` with 3 channels is better than `EfficientNet0` with 1 channel. 
 * `013-a*` are changing the `aug_prob` and `mixup_alpha` parameters. 
-  * Turns out that different values of `mixup_alpha` do not change anything. Only `0` value can change, but _ ahve never tested it.
+  * Turns out that different values of `mixup_alpha` do not change anything. Only `0` value can change, but I have never tested it.
   * Also, `aug_prob` of `0.5` is the best.
 * `013-d*` are changing the `drop_rate` and `drop_path_rate` parameters. 
   * `drop_rate: 0.5` and `drop_path_rate: 0.2` are the best ones. The next is `drop_rate: 0.2` and `drop_path_rate: 0.35`.
 * `014-*` are changing the `precompute_data` parameter and adds all 5 folds to the training.
   * `precompute_data` param does not change anything, but the speed (x30) of training.
   * All 5 folds have 5 different results, from `0.94544` to `0.95592`.
+* `015-*` are changing the `BCEWithLogitsLoss` to `FocalLossBCE` with different params.
+  * `BCEWithLogitsLoss` seems to be the best single.
+  * `FocalLossBCE`'s reduction `sum` is worse than `mean`.
+  * `FocalLossBCE`'s gamma `3` is worse than `2`.
 ### Results
 
 | Experment name, fold | Local AUC | Public AUC | Details |
@@ -196,6 +200,15 @@ MINMAX_NORM: true
 | 013-d21, 0 | 0.95592 | 0.773 | - |
 | 013-d22, 0 | 0.95044 | - | - |
 | 013-d23, 0 | 0.95028 | - | - |
+| 015-1, 0 | 0.95592 | - | - |
+| 015-2, 0 | 0.94985 | - | - |
+| 015-3, 0 | 0.9462 | - | - |
+| 015-4, 0 | error | - | - |
+| 015-5, 0 | 0.94688 | - | - |
+| 015-6, 0 | 0.95063 | - | - |
+| 015-7, 0 | 0.94945 | - | - |
+| 015-8, 0 | 0.95122 | - | - |
+| 015-9, 0 |  | - | - |
 
 ### Hypotheses
 
