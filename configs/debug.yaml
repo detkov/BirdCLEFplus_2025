@@ -37,6 +37,7 @@ MINMAX_NORM: true
 crop_position: 'middle'  # Options: 'start', 'middle', 'random'
 filter_voice: false 
 filter_voice_method: 'none' # Options: 'longest', 'concat'
+audio_lengthening_method: 'pad' # Options: 'pad', 'repeat'
 
 # Training parameters
 device: 'cuda'  # Will be overridden by code

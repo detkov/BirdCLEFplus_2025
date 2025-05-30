@@ -199,17 +199,17 @@ MINMAX_NORM: true
 
 ### Hypotheses
 
-- [ ] Remove human voice [link1](https://www.kaggle.com/code/kdmitrie/bc25-separation-voice-from-data) [link2](https://www.kaggle.com/code/timothylovett/human-voice-removal-caution-around-ruther1)  
+- [x] Remove human voice [link1](https://www.kaggle.com/code/kdmitrie/bc25-separation-voice-from-data) [link2](https://www.kaggle.com/code/timothylovett/human-voice-removal-caution-around-ruther1)  
 - [ ] Remove `mel_spec_norm`  
-- [ ] Test padding audio if it is less than 5s instead of copying it [link](https://www.kaggle.com/code/shionao7/bird-25-submission-regnety008-v1)  
+- [x] Test padding audio if it is less than 5s instead of copying it [link](https://www.kaggle.com/code/shionao7/bird-25-submission-regnety008-v1)  
 - [ ] Maybe use TTA [link](https://www.kaggle.com/code/salmanahmedtamu/labels-tta-efficientnet-b0-pytorch-inference)  
 - [ ] Test `HOP_LENGTH` up to 16  
 - [x] Test `FMIN` up to 20  
 - [x] Test `FMAX` up to 16000    
 - [ ] Test `N_MELS` up to 128
 - [ ] Test 
-- [ ] Test model's `drop_rate` to something other than `0.2`  
-- [ ] Test model's `drop_path_rate` to something other than `0.2`  
+- [x] Test model's `drop_rate` to something other than `0.2`  
+- [x] Test model's `drop_path_rate` to something other than `0.2`  
 - [ ] Testa different model's classifier [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu)
 ```python
         self.classifier = nn.Sequential(
@@ -225,10 +225,10 @@ MINMAX_NORM: true
         )
 ```  
 - [ ] Test audio denoising [link](https://www.kaggle.com/code/midcarryhz/lb-0-784-efficientnet-b0-pytorch-cpu/notebook)  
-- [ ] Test `FocalLossBCE` [link](https://www.kaggle.com/code/hideyukizushi/bird25-onlyinf-v2-s-focallossbce-cv-962-lb-829)  
+- [x] Test `FocalLossBCE` [link](https://www.kaggle.com/code/hideyukizushi/bird25-onlyinf-v2-s-focallossbce-cv-962-lb-829)  
 - [ ] Make prediction based on all 5s segments of the audio [link](https://www.kaggle.com/code/stefankahl/birdclef-2025-sample-submission)  
 - [ ] Add albumentations  
-- [ ] Test extracting not the center 5 seconds, but the first 5 seconds
+- [x] Test extracting not the center 5 seconds, but the first 5 seconds
 - [x] Test 3 channels
 - [x] Test ImageNet normalization for 3 channels if the weights are pretrained `T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),`
 - [ ] Test melspec more thoroughly (`N_MELS`, `HOP_LENGTH`)

@@ -23,7 +23,7 @@ warnings.filterwarnings("ignore")
 def get_melspec_id(cfg):
     melspec_cfg_to_str = "-".join(map(lambda x: str(x).replace(" ", ""), [
             cfg.N_FFT, cfg.HOP_LENGTH, cfg.N_MELS, cfg.FMIN, cfg.FMAX, cfg.MINMAX_NORM,
-            cfg.TARGET_DURATION, cfg.TARGET_SHAPE, cfg.FS, cfg.filter_voice, cfg.filter_voice_method, cfg.crop_position
+            cfg.TARGET_DURATION, cfg.TARGET_SHAPE, cfg.FS, cfg.filter_voice, cfg.filter_voice_method, cfg.crop_position, cfg.audio_lengthening_method
         ])
     )
     
@@ -84,7 +84,15 @@ def process_single_sample(audio_path, cfg, voice_segments):
         audio_data = remove_voice(audio_data, voice_segments, cfg.FS, cfg.filter_voice_method)
 
     if len(audio_data) < target_samples:
-        audio_data = np.pad(audio_data, (0, target_samples - len(audio_data)), mode='constant')
+        if cfg.audio_lengthening_method == "repeat":
+            # Repeat the audio data until it reaches the target length
+            repeat_count = math.ceil(target_samples / len(audio_data))
+            audio_data = np.tile(audio_data, repeat_count)[:target_samples]
+        elif cfg.audio_lengthening_method == "pad":
+            # Pad the audio data with zeros to reach the target length
+            audio_data = np.pad(audio_data, (0, target_samples - len(audio_data)), mode='constant')
+        else:
+            raise ValueError(f"Invalid audio_lenghtening: {cfg.audio_lengthening_method}. Must be one of: repeat, pad")
     
     # Calculate valid start index range
     max_start_idx = len(audio_data) - target_samples
