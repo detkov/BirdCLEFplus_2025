@@ -1,0 +1,70 @@
+# Random seed for reproducibility
+seed: 2025
+debug: false
+num_workers: 0
+
+# Paths
+OUTPUT_DIR: '../output'
+train_datadir: '../input/birdclef-2025/train_audio'
+train_csv: '../input/birdclef-2025/train.csv'
+test_soundscapes: '../input/birdclef-2025/test_soundscapes'
+submission_csv: '../input/birdclef-2025/sample_submission.csv'
+taxonomy_csv: '../input/birdclef-2025/taxonomy.csv'
+precomputerd_datadir: '../input/birdclef-2025-precomputed'
+precomputed_filename: 'melspec.npy'
+voice_datadir: '../input/voice_data'
+
+# Model configuration
+model_name: 'efficientnet_b0'
+pretrained: true
+in_channels: 1
+drop_rate: 0.5
+drop_path_rate: 0.2
+
+# Data loading and preprocessing
+FS: 32000
+TARGET_DURATION: 5.0
+TARGET_SHAPE: [256, 256]
+precompute_audio: true
+
+# Audio processing parameters
+N_FFT: 2048
+HOP_LENGTH: 80
+N_MELS: 256
+FMIN: 20
+FMAX: 16000
+MINMAX_NORM: true
+crop_position: 'middle'  # Options: 'start', 'middle', 'random'
+filter_voice: false 
+filter_voice_method: 'none' # Options: 'longest', 'concat'
+audio_lengthening_method: 'pad' # Options: 'pad', 'repeat'
+
+# Training parameters
+device: 'cuda'  # Will be overridden by code
+epochs: 10
+batch_size: 128
+criterion: 'BCEWithLogitsLoss' # Options: 'BCEWithLogitsLoss', 'FocalLossBCE'
+flbce_alpha: 0.25
+flbce_gamma: 2.0
+flbce_reduction: 'mean'  # Options: 'mean', 'sum', 'none'
+flbce_bce_weight: 1.0  # Weight for BCE loss in FocalLossBCE
+flbce_focal_weight: 1.0  # Weight for Focal loss in FocalLossBCE
+
+# Cross-validation
+n_fold: 5
+selected_folds: [0]
+
+# Optimizer settings
+optimizer: 'AdamW'
+lr: 3.0e-3
+weight_decay: 1.0e-2
+
+# Scheduler settings
+scheduler: 'CosineAnnealingLR'
+min_lr: 1.0e-6
+T_max: 10  # Same as epochs
+
+# Augmentation parameters
+aug_prob: 0.5
+mixup_alpha: 0.5
+brightness: true

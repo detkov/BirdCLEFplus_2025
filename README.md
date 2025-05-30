@@ -78,7 +78,8 @@ These changes were made due to the seemingly clearer and full image. However, we
 ### 2025-05-25
 * `N_MELS` has to be 256!!! Because it translates into the height of the meplspec image.  
 * Changed short audio processing from copying to constant padding  
-
+### 2025-05-30
+* Tested `FocalLossBCE`.
 ## Experiments 
 
 * `001-1.yaml` — `001-8.yaml` are related to the melspec settings. The best ones are: 
@@ -119,6 +120,7 @@ MINMAX_NORM: true
   * `BCEWithLogitsLoss` seems to be the best single.
   * `FocalLossBCE`'s reduction `sum` is worse than `mean`.
   * `FocalLossBCE`'s gamma `3` is worse than `2`.
+* `016-*` are changing the `HOP_LENGTH` from `512` to `16`, also change `N_MELS` from `256` to `512` and `MINMAX_NORM` from `True` to `False`.  
 ### Results
 
 | Experment name, fold | Local AUC | Public AUC | Details |
@@ -244,5 +246,5 @@ MINMAX_NORM: true
 - [x] Test extracting not the center 5 seconds, but the first 5 seconds
 - [x] Test 3 channels
 - [x] Test ImageNet normalization for 3 channels if the weights are pretrained `T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),`
-- [ ] Test melspec more thoroughly (`N_MELS`, `HOP_LENGTH`)
+- [x] Test melspec more thoroughly (`N_MELS`, `HOP_LENGTH`)
 - [ ] 
