@@ -7,6 +7,7 @@ from os.path import basename, join, splitext
 
 import numpy as np
 import pandas as pd
+import torchvision
 import timm
 import torch
 import torch.nn as nn
@@ -166,11 +167,47 @@ def get_scheduler(optimizer, cfg, steps_per_epoch=None):
         
     return scheduler
 
+class FocalLossBCE(torch.nn.Module):
+    def __init__(
+            self,
+            alpha: float,
+            gamma: float,
+            reduction: str,
+            bce_weight: float,
+            focal_weight: float,
+    ):
+        super().__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+        self.reduction = reduction
+        self.bce = torch.nn.BCEWithLogitsLoss(reduction=reduction)
+        self.bce_weight = bce_weight
+        self.focal_weight = focal_weight
+
+    def forward(self, logits, targets):
+        focall_loss = torchvision.ops.focal_loss.sigmoid_focal_loss(
+            inputs=logits,
+            targets=targets,
+            alpha=self.alpha,
+            gamma=self.gamma,
+            reduction=self.reduction,
+        )
+        bce_loss = self.bce(logits, targets)
+        return self.bce_weight * bce_loss + self.focal_weight * focall_loss
+
 
 def get_criterion(cfg):
  
     if cfg.criterion == 'BCEWithLogitsLoss':
         criterion = nn.BCEWithLogitsLoss()
+    elif cfg.criterion == 'FocalLossBCE':
+        criterion = FocalLossBCE(
+            alpha=cfg.flbce_alpha, 
+            gamma=cfg.flbce_gamma, 
+            reduction=cfg.flbce_reduction,
+            bce_weight=cfg.flbce_bce_weight,
+            focal_weight=cfg.flbce_focal_weight
+        )
     else:
         raise NotImplementedError(f"Criterion {cfg.criterion} not implemented")
         
