@@ -1,9 +1,0 @@
-uv run python -m src.train -c configs/015-1.yaml
-uv run python -m src.train -c configs/015-2.yaml
-uv run python -m src.train -c configs/015-3.yaml
-uv run python -m src.train -c configs/015-4.yaml
-uv run python -m src.train -c configs/015-5.yaml
-uv run python -m src.train -c configs/015-6.yaml
-uv run python -m src.train -c configs/015-7.yaml
-uv run python -m src.train -c configs/015-8.yaml
-uv run python -m src.train -c configs/015-9.yaml

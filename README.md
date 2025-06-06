@@ -19,6 +19,11 @@ mv kaggle.json ~/.kaggle/kaggle.json
 chmod 600 ~/.kaggle/kaggle.json
 ```
 
+Place your WandB API token in the `.env` file so that it logins automatically:
+```
+WANDB_API_KEY=your_wandb_api_key
+```
+
 ### Dataset download and processing
 ```bash
 kaggle competitions download -p input -c birdclef-2025
@@ -37,7 +42,7 @@ uv run python -m src.audio_processing
 uv run python -m src.train -c configs/your_config.yaml
 ```
 
-### Upload models to Kaggle 
+<!-- ### Upload models to Kaggle 
 If you do not have the dataset `birdclefplus-2025-models` on Kaggle, you can create it by running the following commands.
 ```bash
 kaggle datasets init -p birdclefplus-2025-models
@@ -56,7 +61,7 @@ kaggle datasets init -p birdclefplus-2025-models
 Then fix the `birdclefplus-2025-models/dataset-metadata.json`. After that, run the following commands to upload your models: 
 ```bash
 kaggle datasets version -p birdclefplus-2025-models -m "Update"
-```
+``` -->
 
 ## Journal
 
